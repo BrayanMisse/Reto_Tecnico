@@ -1,25 +1,24 @@
 package com.reto_tecnico.tasks;
 
-import net.serenitybdd.screenplay.Actor;
+import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Open;
+import net.serenitybdd.screenplay.targets.Target;
+
+import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 public class NavigateToHomePage implements Task {
 
-    private String url;
-
-    public NavigateToHomePage(String url) {
-        this.url = url;
-    }
-
-    public static NavigateToHomePage to(String url) {
-        return new NavigateToHomePage(url);
-    }
+    private static final String URL = "https://www.floristeriamundoflor.com/";
 
     @Override
-    public <T extends Actor> void performAs(T actor) {
+    public <T extends net.serenitybdd.screenplay.Actor> void performAs(T actor) {
         actor.attemptsTo(
-                Open.url(url)
+                Open.url(URL)
         );
+    }
+
+    public static Performable usingDefaultBrowser() {
+        return instrumented(NavigateToHomePage.class);
     }
 } 
