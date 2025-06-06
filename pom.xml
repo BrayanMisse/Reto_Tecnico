@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.reto</groupId>
+    <artifactId>reto-tecnico</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version> <!-- O la versión de Java que estés usando (ej: 8, 17) -->
+        <serenity.version>4.1.4</serenity.version> <!-- Versión recomendada de Serenity (ajustar si es necesario) -->
+        <cucumber.version>7.14.0</cucumber.version> <!-- Versión recomendada de Cucumber (ajustar si es necesario) -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <encoding>UTF-8</encoding>
+    </properties>
+
+    <repositories>
+        <!-- Repositorio Central de Maven (añadido explícitamente) -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- Repositorios de Serenity BDD -->
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>serenity-snapshots</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <id>serenity-releases</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Serenity BDD core -->
+        <dependency>
+            <groupId>net.serenitybdd</groupId>
+            <artifactId>serenity-core</artifactId>
+            <version>${serenity.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Serenity BDD and Cucumber -->
+        <dependency>
+            <groupId>net.serenitybdd</groupId>
+            <artifactId>serenity-cucumber</artifactId>
+            <version>${serenity.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Cucumber Core -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Cucumber JUnit Runner -->
+         <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+         </dependency>
+
+        <!-- JUnit 4 (Serenity often works well with JUnit 4 runner) -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Assertions (used in our Step Definitions) -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.25.1</version> <!-- O la versión más reciente -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Logging implementation (Serenity requires one) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.7</version> <!-- O la versión más reciente -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- WebDriver Manager (optional, but highly recommended for managing browser drivers) -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>5.7.0</version> <!-- O la versión más reciente -->
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Plugin para compilar el código fuente -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version> <!-- O la versión más reciente -->
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin para ejecutar las pruebas de integración (donde Serenity/Cucumber típicamente corre) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M5</version> <!-- O la versión más reciente -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                 <configuration>
+                    <includes>
+                        <!-- Incluye tu clase de Test Runner, ajusta el nombre si es diferente -->
+                        <include>**/*Runner.java</include>
+                        <include>**/CucumberTestSuite.java</include>
+                    </includes>
+                     <!-- Configuración para pasar parámetros a Serenity/Cucumber, si es necesario -->
+                     <systemPropertyVariables>
+                         <webdriver.driver>chrome</webdriver.driver> <!-- Puedes cambiar a firefox, edge, etc. -->
+                     </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin de Serenity BDD para procesar los resultados y generar reportes -->
+            <plugin>
+                <groupId>net.serenitybdd.maven.plugins</groupId>
+                <artifactId>serenity-maven-plugin</artifactId>
+                <version>${serenity.version}</version>
+                 <executions>
+                     <execution>
+                         <id>serenity-aggregate</id>
+                         <phase>verify</phase> <!-- Se ejecuta después de las pruebas -->
+                         <goals>
+                             <goal>aggregate</goal>
+                         </goals>
+                     </execution>
+                 </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
